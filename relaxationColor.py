@@ -4,6 +4,36 @@ from typing import Tuple
 
 
 def relaxationColorMap(maptype: str, x: np.ndarray, loLev: float, upLev: float) -> Tuple[np.ndarray, mcolors.ListedColormap]:
+    """
+    relaxationColorMap acts in two ways:
+        1. Generate a colormap to be used on display, given image type 
+           (which must be one of 
+           "T1","R1","T2","T2*","R2","R2*","T1rho","T1ρ","R1rho","R1ρ",
+           "t1","r1","t2","t2*","r2","r2*","t1rho","t1ρ","r1rho","r1ρ")
+           and given the range of the image to be displayed;
+        2. Generates a 'clipped' image, which is a copy of the input image except that values are clipped to the lower level,
+           while respecting the special value of 0 (which has to map to the "invalid" color)
+
+    Parameters
+    ----------
+    maptype : str
+        A string from aformentioned series, e.g., "T1" or "R2"
+    x : np.ndarray
+        The image to be displayed
+    loLev : float
+        Lower level of the range to be displayed
+    upLev: float
+        Upper level of the range to be displayed
+    
+    Returns
+    -------
+    xClip : np.ndarray
+        Value-clipped image
+    cmap : mcolors.ListedColormap
+        Colormap to be used in image-display functions
+    
+    """
+    
     maptype = maptype.capitalize()
     if maptype in ["T1", "R1"]:
         fn = "./lipari.csv"
@@ -34,6 +64,28 @@ def relaxationColorMap(maptype: str, x: np.ndarray, loLev: float, upLev: float) 
 
 
 def colorLogRemap(oriCmap: np.ndarray, loLev: float, upLev: float) -> np.ndarray:
+    """
+    colorLogRemap: 
+        Lookup of the original color map table according to a "log-like" curve.
+        The log-like curve contains a linear part and a logarithmic part; 
+        the size of the parts depends on the range (loLev, upLev)
+
+    Parameters
+    ----------
+    oriCmap : np.ndarray
+        Original color map table
+    loLev : float
+        Lower level of the range to be displayed
+    upLev : float
+        Upper level of the range to be displayed
+    
+    Returns
+    -------
+    logCmap : np.ndarray
+        Modified colormap
+
+    """
+
     if not upLev > 0:
         raise ValueError("Upper level must be positive")
     if not upLev > loLev:

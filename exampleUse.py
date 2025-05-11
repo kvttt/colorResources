@@ -13,6 +13,6 @@ if __name__ == "__main__":
     imClip, cmap = relaxationColorMap("T1", im, loLev, upLev)
     plt.figure(figsize=(8, 6))
     plt.axis('off')
-    plt.imshow(imClip, vmin=loLev, vmax=upLev, cmap=cmap)
+    plt.imshow(imClip, vmin=loLev, vmax=upLev, cmap=cmap, interpolation='none')
     plt.colorbar()
     plt.show()
