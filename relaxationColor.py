@@ -50,10 +50,21 @@ def relaxationColorMap(maptype: str, x: np.ndarray, loLev: float, upLev: float) 
     colortable[0, :] = 0.0
 
     eps = (upLev - loLev) / colortable.shape[0]
+
     xClip = np.where(x < eps, loLev - eps, np.where(x < loLev + eps, loLev + 1.5 * eps, x))
     
     if loLev < 0:
-        xClip = np.where(x < eps, loLev - eps, x)
+        xClip = np.where(
+            x < eps, 
+            loLev - eps, 
+            x,
+        )
+    else:
+        xClip = np.where(
+            x < eps, 
+            loLev - eps, 
+            np.where(x < loLev + eps, loLev + 1.5 * eps, x),
+        )
 
     lutCmap = colorLogRemap(colortable, loLev, upLev)
     
@@ -92,19 +103,18 @@ def colorLogRemap(oriCmap: np.ndarray, loLev: float, upLev: float) -> np.ndarray
         raise ValueError("Upper level must be larger than lower level")
     
     mapLength = oriCmap.shape[0]
-    logCmap = np.zeros_like(oriCmap)
     eInv = np.exp(-1.0)
     aVal = eInv * upLev
     mVal = max(aVal, loLev)
-    bVal = (aVal < loLev) and (1.0 / mapLength) or (aVal - loLev) / (2 * aVal - loLev) + (1.0 / mapLength)
+    bVal = 1.0 / mapLength if aVal < loLev else (aVal - loLev) / (2 * aVal - loLev) + (1.0 / mapLength)
     bVal += 1e-7
-
+    logCmap = np.zeros_like(oriCmap)
     logCmap[0, :] = oriCmap[0, :]
-
     logPortion = 1.0 / (np.log(mVal) - np.log(upLev))
     
     for g in range(1, mapLength):
-        x = g * (upLev - loLev) / mapLength + loLev
+        f = 0.0
+        x = (g + 1) * (upLev - loLev) / mapLength + loLev
         if x > mVal:
             f = mapLength * ((np.log(mVal) - np.log(x)) * logPortion * (1 - bVal) + bVal)
         elif loLev < aVal and x > loLev:
@@ -112,6 +122,6 @@ def colorLogRemap(oriCmap: np.ndarray, loLev: float, upLev: float) -> np.ndarray
         elif x <= loLev:
             f = 1.0
 
-        logCmap[g, :] = oriCmap[min(mapLength - 1, int(np.floor(f))), :]
+        logCmap[g, :] = oriCmap[min(mapLength, 1 + int(np.floor(f))) - 1, :]
 
     return logCmap
