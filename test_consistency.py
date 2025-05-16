@@ -16,6 +16,7 @@ if __name__ == "__main__":
     imClip_julia, cmap_julia = jl.relaxationColorMap(maptype, im, loLev, upLev)
     imClip_julia = np.asarray(imClip_julia)
     cmap_julia = np.asarray([[x.r, x.g, x.b] for x in cmap_julia])
+    print(jl.pwd())
 
     # Python
     imClip_python, cmap_python = relaxationColorMap(maptype, im, loLev, upLev)
