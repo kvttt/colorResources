@@ -11,11 +11,11 @@ if __name__ == "__main__":
     loLev = 400.0
     upLev = 2000.0
 
-    # # Julia 
-    # jl.include("./relaxationColor.jl")
-    # imClip_julia, cmap_julia = jl.relaxationColorMap(maptype, im, loLev, upLev)
-    # imClip_julia = np.asarray(imClip_julia)
-    # cmap_julia = np.asarray([[x.r, x.g, x.b] for x in cmap_julia])
+    # Julia 
+    jl.include("./RelaxationColor.jl")
+    imClip_julia, cmap_julia = jl.relaxationColorMap(maptype, im, loLev, upLev)
+    imClip_julia = np.asarray(imClip_julia)
+    cmap_julia = np.asarray([[x.r, x.g, x.b] for x in cmap_julia])
     print(jl.pwd())
 
     # Python
