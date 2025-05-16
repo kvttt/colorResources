@@ -1,0 +1,67 @@
+name: Check consistency between Julia and Python implementations
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Julia
+      uses: julia-actions/setup-julia@v3
+      with:
+        version: '1.10'
+
+    - name: Cache Julia packages
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.julia/compiled
+          ~/.julia/artifacts
+          ~/.julia/packages
+        key: julia-cache-${{ hashFiles('colorResources/**/Project.toml', 'colorResources/**/Manifest.toml') }}
+        restore-keys: |
+          julia-cache-
+
+    - name: Install Julia packages
+      run: |
+        julia -e '
+          using Pkg;
+          try
+              Pkg.instantiate();
+              Pkg.add(["Colors", "DelimitedFiles", "FileIO", "JLD", "PyPlot"]);
+          catch err
+              println("Error installing Julia packages: $err")
+              exit(1)
+          end'
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Cache Python packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: python-cache-${{ hashFiles('colorResources/requirements.txt') }}
+        restore-keys: |
+          python-cache-
+
+    - name: Install Python packages
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r colorResources/requirements.txt || { echo "Error installing Python packages"; exit 1; }
+
+    - name: Run Python script
+      run: |
+        python colorResources/test_consistency.py || { echo "Error running Python script"; exit 1; }
