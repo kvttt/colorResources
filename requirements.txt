@@ -1,0 +1,4 @@
+numpy==1.26.4
+matplotlib==3.9.0
+juliacall==0.9.24
+scipy==1.11.0
