@@ -45,4 +45,5 @@ jobs:
 
     - name: Run Python script
       run: |
+        cd colorResources
         python test_consistency.py || { echo "Error running Python script"; exit 1; }
