@@ -7,12 +7,12 @@ from relaxationColor import relaxationColorMap
 if __name__ == "__main__":
     # config
     maptype = "T1"
-    im = np.load('sampleT1map.npy')
+    im = np.load('./sampleT1map.npy')
     loLev = 400.0
     upLev = 2000.0
 
     # Julia 
-    jl.include("relaxationColor.jl")
+    jl.include("./relaxationColor.jl")
     imClip_julia, cmap_julia = jl.relaxationColorMap(maptype, im, loLev, upLev)
     imClip_julia = np.asarray(imClip_julia)
     cmap_julia = np.asarray([[x.r, x.g, x.b] for x in cmap_julia])
